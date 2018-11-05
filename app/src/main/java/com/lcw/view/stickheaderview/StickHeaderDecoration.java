@@ -57,7 +57,6 @@ public class StickHeaderDecoration extends RecyclerView.ItemDecoration {
      */
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        mItemHeaderPaint.setColor(Color.BLUE);
         if (parent.getAdapter() instanceof RecyclerViewAdapter) {
             RecyclerViewAdapter adapter = (RecyclerViewAdapter) parent.getAdapter();
             int count = parent.getChildCount();//获取可见范围内Item的总数
@@ -65,12 +64,14 @@ public class StickHeaderDecoration extends RecyclerView.ItemDecoration {
                 View view = parent.getChildAt(i);
                 int position = parent.getChildLayoutPosition(view);
                 boolean isHeader = adapter.isItemHeader(position);
+                int left = parent.getPaddingLeft();
+                int right = parent.getWidth() - parent.getPaddingRight();
                 if (isHeader) {
-                    c.drawRect(0, view.getTop() - mItemHeaderHeight, parent.getWidth(), view.getTop(), mItemHeaderPaint);
+                    c.drawRect(left, view.getTop() - mItemHeaderHeight, right, view.getTop(), mItemHeaderPaint);
                     mTextPaint.getTextBounds(adapter.getGroupName(position), 0, adapter.getGroupName(position).length(), mTextRect);
-                    c.drawText(adapter.getGroupName(position), mTextPaddingLeft, (view.getTop() - mItemHeaderHeight) + mItemHeaderHeight / 2 + mTextRect.height() / 2, mTextPaint);
+                    c.drawText(adapter.getGroupName(position), left + mTextPaddingLeft, (view.getTop() - mItemHeaderHeight) + mItemHeaderHeight / 2 + mTextRect.height() / 2, mTextPaint);
                 } else {
-                    c.drawRect(0, view.getTop() - 1, parent.getWidth(), view.getTop(), mLinePaint);
+                    c.drawRect(left, view.getTop() - 1, right, view.getTop(), mLinePaint);
                 }
             }
         }
@@ -86,22 +87,25 @@ public class StickHeaderDecoration extends RecyclerView.ItemDecoration {
      */
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        mItemHeaderPaint.setColor(Color.RED);
         if (parent.getAdapter() instanceof RecyclerViewAdapter) {
             RecyclerViewAdapter adapter = (RecyclerViewAdapter) parent.getAdapter();
             int position = ((LinearLayoutManager) (parent.getLayoutManager())).findFirstVisibleItemPosition();
             View view = parent.findViewHolderForAdapterPosition(position).itemView;
             boolean isHeader = adapter.isItemHeader(position + 1);
+            int top = parent.getPaddingTop();
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
             if (isHeader) {
                 int bottom = Math.min(mItemHeaderHeight, view.getBottom());
-                c.drawRect(0, view.getTop() - mItemHeaderHeight, parent.getWidth(), bottom, mItemHeaderPaint);
+                c.drawRect(left, top + view.getTop() - mItemHeaderHeight, right, top + bottom, mItemHeaderPaint);
                 mTextPaint.getTextBounds(adapter.getGroupName(position), 0, adapter.getGroupName(position).length(), mTextRect);
-                c.drawText(adapter.getGroupName(position), mTextPaddingLeft, mItemHeaderHeight / 2 + mTextRect.height() / 2 - (mItemHeaderHeight - bottom), mTextPaint);
+                c.drawText(adapter.getGroupName(position), left + mTextPaddingLeft, top + mItemHeaderHeight / 2 + mTextRect.height() / 2 - (mItemHeaderHeight - bottom), mTextPaint);
             } else {
-                c.drawRect(0, 0, parent.getWidth(), mItemHeaderHeight, mItemHeaderPaint);
+                c.drawRect(left, top, right, top + mItemHeaderHeight, mItemHeaderPaint);
                 mTextPaint.getTextBounds(adapter.getGroupName(position), 0, adapter.getGroupName(position).length(), mTextRect);
-                c.drawText(adapter.getGroupName(position), mTextPaddingLeft, mItemHeaderHeight / 2 + mTextRect.height() / 2, mTextPaint);
+                c.drawText(adapter.getGroupName(position), left + mTextPaddingLeft, top + mItemHeaderHeight / 2 + mTextRect.height() / 2, mTextPaint);
             }
+            c.save();
         }
 
     }
